@@ -1,17 +1,29 @@
 """Test the main module."""
 import unittest
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
+from app.__tests__.base import BaseTest
+from app.cache.cache import get_cache
 from app.main import app
 
 
-class TestMain(unittest.TestCase):
+class TestMain(BaseTest):
     """Test the main module."""
 
     def setUp(self):
         """Set up the test client."""
         self.client = TestClient(app)
+
+        self.timer_patch = patch("threading.Timer")
+        self.mocked_timer = self.timer_patch.start()
+
+        self.cache_instance = get_cache()
+
+    def tearDown(self):
+        """Tear down the test client."""
+        patch.stopall()
 
     def test_not_found(self):
         """Test that the / route returns a 404."""

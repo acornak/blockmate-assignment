@@ -14,7 +14,7 @@ else
 fi
 
 URL="http://0.0.0.0:8000/check?address=0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67"
-NUM_REQUESTS=10
+NUM_REQUESTS=200
 
 for ((i=1; i<=$NUM_REQUESTS; i++)); do
     response=$(curl -s "$URL")

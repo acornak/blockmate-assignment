@@ -6,10 +6,11 @@ from unittest.mock import patch
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from app.__tests__.base import BaseTest
 from app.middleware.rate_limiter import RateLimiter
 
 
-class BaseRateLimitMiddlewareTest(unittest.TestCase):
+class BaseRateLimitMiddlewareTest(BaseTest):
     """Parent class for rate-limiting middleware tests."""
 
     url = "/"
@@ -21,8 +22,10 @@ class BaseRateLimitMiddlewareTest(unittest.TestCase):
         Create a dummy FastAPI app and add the rate-limiting middleware.
         Includes patching the rate-limiting config.
         """
-        self.rate_limit = patch("app.middleware.rate_limiter.cfg.rate_limit", 5).start()
-        self.rate_limit_time_window = patch(
+        self.rate_limit_patch = patch(
+            "app.middleware.rate_limiter.cfg.rate_limit", 5
+        ).start()
+        self.rate_limit_time_window_patch = patch(
             "app.middleware.rate_limiter.cfg.rate_limit_time_window", 10
         ).start()
 

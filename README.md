@@ -20,3 +20,7 @@ Do an API, with this endpoints:
 
 - [Docker](https://www.docker.com/)
 - [Make](https://www.gnu.org/software/make/manual/make.html)
+
+## Limitations
+
+The current setup with 1 unicorn worker and in-memory rate limiting is not suitable for production. It is only meant to be used for development and testing purposes. To make it production ready, we need to use a proper rate limiting solution like [redis](https://redis.io/).

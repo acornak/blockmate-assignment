@@ -4,23 +4,29 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
+from app.__tests__.base import BaseTest
+from app.cache.cache import get_cache
 from app.main import app
 
 
-class TestCheckEndpoint(unittest.TestCase):
+class TestCheckEndpoint(BaseTest):
     """Test the check endpoint."""
 
     def setUp(self):
         """Set up the test client."""
         self.client = TestClient(app)
+
         self.mocked_token = "mocked_token"
         self.project_token_patch = patch(
             "app.routes.check.cfg.project_token", self.mocked_token
         ).start()
-        self.rate_limit = patch("app.routes.check.cfg.rate_limit", 100).start()
-        self.rate_limit_time_window = patch(
+
+        self.rate_limit_patch = patch("app.routes.check.cfg.rate_limit", 100).start()
+        self.rate_limit_time_window_patch = patch(
             "app.routes.check.cfg.rate_limit_time_window", 60
         ).start()
+
+        self.cache_instance = get_cache()
 
     def tearDown(self):
         """Tear down the test client."""

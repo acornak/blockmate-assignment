@@ -15,6 +15,7 @@ RUN poetry install --no-root --only main
 COPY . .
 
 ENV ENVIRONMENT=dev
+ENV LOG_LEVEL=INFO
 
 # run tests
 RUN python -m unittest discover -s app/__tests__ -p "*_test.py" -v
