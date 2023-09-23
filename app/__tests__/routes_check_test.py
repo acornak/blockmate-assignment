@@ -14,12 +14,12 @@ class TestCheckEndpoint(unittest.TestCase):
         """Set up the test client."""
         self.client = TestClient(app)
         self.mocked_token = "mocked_token"
-        self.mocked_rate_limit = "mocked_rate_limit"
         self.project_token_patch = patch(
             "app.routes.check.cfg.project_token", self.mocked_token
         ).start()
-        self.rate_limit_patch = patch(
-            "app.routes.check.cfg.rate_limit", self.mocked_rate_limit
+        self.rate_limit = patch("app.routes.check.cfg.rate_limit", 100).start()
+        self.rate_limit_time_window = patch(
+            "app.routes.check.cfg.rate_limit_time_window", 60
         ).start()
 
     def tearDown(self):
@@ -27,7 +27,7 @@ class TestCheckEndpoint(unittest.TestCase):
         patch.stopall()
 
     def test_check_ethereum_address_success(self):
-        """Test the check endpoint."""
+        """Test the check endpoint success."""
         test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67"
 
         response = self.client.get(f"/check?address={test_address}")
@@ -40,7 +40,6 @@ class TestCheckEndpoint(unittest.TestCase):
             {
                 "ethereum_address": test_address,
                 "blockmate_token": self.mocked_token,
-                "rate_limiter": self.mocked_rate_limit,
             },
         )
 

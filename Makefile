@@ -5,10 +5,10 @@ run:
 	docker run -p 8000:8000 blockmate-app
 
 stop:
-	docker stop blockmate-container
-
-remove:
-	docker rm blockmate-container
+	CONTAINER_IDS=$$(docker ps -q --filter ancestor=blockmate-app); \
+    for container_id in $${CONTAINER_IDS}; do \
+        docker stop $${container_id}; \
+    done
 
 dockerize: build run
 
@@ -18,7 +18,6 @@ help:
 	@echo "  build        Build the Docker image"
 	@echo "  run          Run the Docker container"
 	@echo "  stop         Stop the Docker container"
-	@echo "  remove       Remove the Docker container"
 	@echo "  dockerize    Build and run the Docker container"
 
 .PHONY: build run stop remove dockerize help

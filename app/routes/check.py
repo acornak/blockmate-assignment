@@ -1,11 +1,9 @@
 """Check route."""
 from fastapi import APIRouter
 
-from app.config.config import AppConfig
+from app.config.config import cfg
 
 router = APIRouter()
-
-cfg = AppConfig()
 
 
 @router.get("/check")
@@ -22,5 +20,4 @@ async def check_ethereum_address(
     return {
         "ethereum_address": address,
         "blockmate_token": cfg.project_token,
-        "rate_limiter": cfg.rate_limit,
     }
