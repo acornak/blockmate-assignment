@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 from app.__tests__.base import BaseTest
 from app.cache.cache import get_cache
+from app.config.config import cfg
 from app.main import app
 
 
@@ -15,11 +16,6 @@ class TestCheckEndpoint(BaseTest):
     def setUp(self):
         """Set up the test client."""
         self.client = TestClient(app)
-
-        self.mocked_token = "mocked_token"
-        self.project_token_patch = patch(
-            "app.routes.check.cfg.project_token", self.mocked_token
-        ).start()
 
         self.rate_limit_patch = patch("app.routes.check.cfg.rate_limit", 100).start()
         self.rate_limit_time_window_patch = patch(
@@ -45,7 +41,7 @@ class TestCheckEndpoint(BaseTest):
             data,
             {
                 "ethereum_address": test_address,
-                "blockmate_token": self.mocked_token,
+                "blockmate_token": cfg.project_token,
             },
         )
 

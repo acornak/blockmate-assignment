@@ -50,5 +50,5 @@ def get_cache() -> LRUCache:
     """Lazy instantiation of the cache."""
     global _cache_instance
     if _cache_instance is None:
-        _cache_instance = LRUCache(100, 10)
+        _cache_instance = LRUCache(100, 60)
     return _cache_instance
