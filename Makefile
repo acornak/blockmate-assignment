@@ -1,6 +1,9 @@
 build:
 	docker build -t blockmate-app .
 
+test:
+	python -m unittest discover -s app/__tests__ -p "*_test.py" -v
+
 run:
 	docker run -p 8000:8000 blockmate-app
 

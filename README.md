@@ -21,6 +21,16 @@ Do an API, with this endpoints:
 - [Docker](https://www.docker.com/)
 - [Make](https://www.gnu.org/software/make/manual/make.html)
 
+## API Documentation
+
+FastAPI provides a Swagger UI for API documentation. It can be accessed at ```http://localhost:8000/docs```
+
+## Run coverage
+
+- First run tests: ```poetry run coverage run -m unittest discover -s app/__tests__ -p "*_test.py" -v```
+- Then generate coverage report in terminal ```poetry run coverage report```
+- Or generate coverage report in html ```poetry run coverage html``` and open ```htmlcov/index.html``` in browser
+
 ## Limitations
 
 The current setup with 1 unicorn worker and in-memory rate limiting is not suitable for production. It is only meant to be used for development and testing purposes. To make it production ready, we need to use a proper rate limiting solution like [redis](https://redis.io/).

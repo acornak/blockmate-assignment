@@ -2,6 +2,7 @@
 import base64
 import json
 import logging
+from asyncio import Lock
 from datetime import datetime
 
 from fastapi import HTTPException
@@ -16,6 +17,7 @@ class JWTHandler:
         """JWT Token handler constructor."""
         self.token = None
         self.expire_time = None
+        self.lock = Lock()
 
     async def get_token(self) -> str:
         """
@@ -23,15 +25,16 @@ class JWTHandler:
 
         :return: Valid JWT token.
         """
-        if self.token is None:
-            self.token = await fetch_new_jwt_token()
-            self.expire_time = self._get_expire_time(self.token)
-            logging.info("JWT token fetched")
+        async with self.lock:
+            if self.token is None:
+                self.token = await fetch_new_jwt_token()
+                self.expire_time = self._get_expire_time(self.token)
+                logging.info("JWT token fetched")
 
-        if datetime.utcnow() >= self.expire_time:
-            self.token = await fetch_new_jwt_token()
-            self.expire_time = self._get_expire_time(self.token)
-            logging.info("JWT token refreshed")
+            if datetime.utcnow() >= self.expire_time:
+                self.token = await fetch_new_jwt_token()
+                self.expire_time = self._get_expire_time(self.token)
+                logging.info("JWT token refreshed")
 
         return self.token
 
@@ -53,8 +56,10 @@ class JWTHandler:
                     token_parts[1] + "=" * (4 - len(token_parts[1]) % 4)
                 ).decode("utf-8")
             )
-        except (json.JSONDecodeError, IndexError):
-            raise HTTPException(status_code=401, detail="Invalid token payload")
+        except (json.JSONDecodeError, IndexError) as exc:
+            raise HTTPException(
+                status_code=401, detail="Invalid token payload"
+            ) from exc
 
         expiration_timestamp = payload.get("exp", 0)
         expiration_datetime = datetime.fromtimestamp(expiration_timestamp)

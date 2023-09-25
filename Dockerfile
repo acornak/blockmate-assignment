@@ -18,6 +18,6 @@ ENV ENVIRONMENT=dev
 ENV LOG_LEVEL=INFO
 
 # run tests
-RUN python -m unittest discover -s app/__tests__ -p "*_test.py" -v
+RUN pytest
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

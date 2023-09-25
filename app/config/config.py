@@ -1,7 +1,11 @@
 """Centralized configuration for the application."""
 import os
 
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
+
+environment = os.getenv("ENVIRONMENT", "dev")
+load_dotenv(f".env.{environment}")
 
 
 class AppConfig(BaseSettings):
@@ -19,12 +23,6 @@ class AppConfig(BaseSettings):
     jwt_url: str
     rate_limit_time_window: int
     rate_limit: int
-
-    class Config:
-        """Configuration for the AppConfig class."""
-
-        environment = os.getenv("ENVIRONMENT", "dev")
-        env_file = f".env.{environment}"
 
 
 cfg = AppConfig()

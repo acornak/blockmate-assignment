@@ -1,58 +1,66 @@
 """Test the JWT class."""
-import unittest
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
-from app.jwt.jwt import JWTHandler, get_current_token
+import pytest
+
+from app.__tests__.utils import generate_token
+from app.jwt.jwt import JWTHandler
 
 
-class TestJWTHandler(unittest.TestCase):
-    """Test the JWTHandler class."""
+@pytest.fixture
+def handler() -> JWTHandler:
+    """
+    Get the JWT handler.
 
-    def setUp(self):
-        """Set up the JWTHandler."""
-        self.jwt_handler = JWTHandler()
-
-    def tearDown(self):
-        """Tear down the JWTHandler."""
-        patch.stopall()
-
-    @patch("app.jwt.jwt.fetch_new_jwt_token", new_callable=AsyncMock)
-    async def test_get_current_token(self, mock_fetch_new_jwt_token):
-        """Test the get_current_token method without token."""
-        mock_fetch_new_jwt_token.return_value = self.test_token
-
-        current_token = await get_current_token(self.jwt_handler)
-
-        self.assertEqual(current_token, mock_fetch_new_jwt_token.return_value)
-        mock_fetch_new_jwt_token.assert_called()
-
-    @patch("app.jwt.jwt.fetch_new_jwt_token", new_callable=AsyncMock)
-    async def test_valid_token(self, mock_fetch_new_jwt_token):
-        """Test the get_current_token method with a valid token."""
-        mock_fetch_new_jwt_token.return_value = self.test_token
-
-        self.jwt_handler.expire_time = datetime.utcnow() + timedelta(seconds=60)
-        self.jwt_handler.token = self.test_token
-
-        current_token = await get_current_token(self.jwt_handler)
-
-        self.assertEqual(current_token, mock_fetch_new_jwt_token.return_value)
-        mock_fetch_new_jwt_token.assert_not_called()
-
-    @patch("app.jwt.jwt.fetch_new_jwt_token", new_callable=AsyncMock)
-    async def test_expired_token(self, mock_fetch_new_jwt_token):
-        """Test the get_current_token method with an expired token."""
-        mock_fetch_new_jwt_token.return_value = self.test_token
-
-        self.jwt_handler.expire_time = datetime.utcnow() - timedelta(seconds=10)
-        self.jwt_handler.token = self.test_token
-
-        current_token = await get_current_token(self.jwt_handler)
-
-        self.assertEqual(current_token, mock_fetch_new_jwt_token.return_value)
-        mock_fetch_new_jwt_token.assert_called()
+    :return: The JWT handler.
+    """
+    return JWTHandler()
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture
+def token() -> str:
+    """
+    Get a JWT token.
+
+    :return: The JWT token.
+    """
+    return generate_token(datetime.utcnow() + timedelta(hours=1))
+
+
+@pytest.mark.asyncio
+@patch("app.jwt.jwt.fetch_new_jwt_token", new_callable=AsyncMock)
+async def test_get_current_token(mock_fetch_new_jwt_token, handler, token):
+    """Test the get_current_token method without token."""
+    mock_fetch_new_jwt_token.return_value = token
+    obtained_token = await handler.get_token()
+
+    assert obtained_token == token
+    mock_fetch_new_jwt_token.assert_called_once()
+
+
+@pytest.mark.asyncio
+@patch("app.jwt.jwt.fetch_new_jwt_token", new_callable=AsyncMock)
+async def test_get_token_uses_existing(mock_fetch_new_jwt_token, handler, token):
+    """Test the get_token method with existing token."""
+    handler.token = token
+    handler.expire_time = datetime.utcnow() + timedelta(minutes=10)
+
+    obtained_token = await handler.get_token()
+
+    assert obtained_token == token
+    mock_fetch_new_jwt_token.assert_not_called()
+
+
+@pytest.mark.asyncio
+@patch("app.jwt.jwt.fetch_new_jwt_token", new_callable=AsyncMock)
+async def test_get_token_refreshes_expired(mock_fetch_new_jwt_token, handler, token):
+    """Test the get_token method with expired token."""
+    mock_fetch_new_jwt_token.return_value = token
+    handler.token = "expired_token"
+    handler.expire_time = datetime.utcnow() - timedelta(minutes=10)
+
+    obtained_token = await handler.get_token()
+
+    assert obtained_token == token
+    mock_fetch_new_jwt_token.assert_called_once()
