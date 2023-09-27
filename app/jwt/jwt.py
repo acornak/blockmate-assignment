@@ -3,11 +3,13 @@ import base64
 import json
 import logging
 from asyncio import Lock
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi import HTTPException
 
 from app.utils.jwt_utils import fetch_new_jwt_token
+
+logger = logging.getLogger(__name__)
 
 
 class JWTHandler:
@@ -29,12 +31,16 @@ class JWTHandler:
             if self.token is None:
                 self.token = await fetch_new_jwt_token()
                 self.expire_time = self._get_expire_time(self.token)
-                logging.info("JWT token fetched")
+                logger.info("JWT token fetched")
+                logger.info("JWT token expires at: %s", self.expire_time.isoformat())
 
             if datetime.utcnow() >= self.expire_time:
                 self.token = await fetch_new_jwt_token()
-                self.expire_time = self._get_expire_time(self.token)
-                logging.info("JWT token refreshed")
+                self.expire_time = self._get_expire_time(self.token) - timedelta(
+                    seconds=1
+                )
+                logger.info("JWT token refreshed")
+                logger.info("JWT token expires at: %s", self.expire_time.isoformat())
 
         return self.token
 
@@ -49,16 +55,16 @@ class JWTHandler:
         try:
             token_parts = token.split(".")
             if len(token_parts) != 3:
-                raise HTTPException(status_code=401, detail="Invalid token format")
+                raise HTTPException(status_code=500, detail="Invalid token format")
 
             payload = json.loads(
                 base64.urlsafe_b64decode(
                     token_parts[1] + "=" * (4 - len(token_parts[1]) % 4)
                 ).decode("utf-8")
             )
-        except (json.JSONDecodeError, IndexError) as exc:
+        except (json.JSONDecodeError, IndexError, UnicodeDecodeError) as exc:
             raise HTTPException(
-                status_code=401, detail="Invalid token payload"
+                status_code=500, detail=f"Internal server error: {str(exc)}"
             ) from exc
 
         expiration_timestamp = payload.get("exp", 0)

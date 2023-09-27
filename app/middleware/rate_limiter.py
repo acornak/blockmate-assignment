@@ -1,7 +1,7 @@
 """Rate limiter middleware to limit incoming requests."""
 from asyncio import Lock
 from datetime import datetime, timedelta
-from typing import Callable, Coroutine, List
+from typing import Callable, Coroutine
 
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
@@ -14,11 +14,11 @@ class RateLimiter:
 
     def __init__(self) -> None:
         """Rate limiter constructor."""
-        self.request_timestamps: List[datetime] = []
-        self.request_history: List[Request] = []
+        self.request_timestamps: list[datetime] = []
+        self.request_history: list[Request] = []
         self.time_window: timedelta = timedelta(seconds=cfg.rate_limit_time_window)
         self.requests_limit: int = cfg.rate_limit
-        self.request_history: dict[str, List[datetime]] = {}
+        self.request_history: dict[str, list[datetime]] = {}
         self.lock = Lock()
 
     async def rate_limit_middleware(

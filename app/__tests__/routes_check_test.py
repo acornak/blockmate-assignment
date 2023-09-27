@@ -3,11 +3,13 @@ from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
 import pytest
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from app.__tests__.utils import generate_token
-from app.config.config import cfg
 from app.main import app
+from app.models.check_model import CheckEndpointResponse
+from app.models.risk_model import Details, OwnCategory, RiskDetailsResponse
 
 
 @pytest.fixture(scope="module")
@@ -20,43 +22,135 @@ def client() -> TestClient:
     return TestClient(app)
 
 
-@pytest.mark.asyncio
-async def test_check_ethereum_address_success(client) -> None:
-    """Test the successful check of an Ethereum address."""
-    with patch("app.routes.check.cfg.rate_limit", 100), patch(
-        "app.routes.check.cfg.rate_limit_time_window", 60
+@pytest.fixture(scope="function")
+def patched_config() -> None:
+    """Patch the config for rate limiting."""
+    with patch("app.middleware.rate_limiter.cfg.rate_limit", 100), patch(
+        "app.middleware.rate_limiter.cfg.rate_limit_time_window", 60
     ):
-        token = generate_token(datetime.utcnow() + timedelta(hours=1))
-        test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67"
-
-        with patch(
-            "app.routes.check.fetch_risk_details", new_callable=AsyncMock
-        ) as mock_fetch_risk_details, patch(
-            "app.routes.check.get_current_token", new_callable=AsyncMock
-        ) as mock_get_current_token:
-            mock_get_current_token.return_value = token
-            mock_fetch_risk_details.return_value = {"some": "value"}
-
-            response = client.get(f"/check?address={test_address}")
-
-            assert response.status_code == 200
-            assert response.json() == {
-                "ethereum_address": test_address,
-                "blockmate_token": cfg.project_token,
-            }
-            mock_fetch_risk_details.assert_called_once_with(test_address, token)
+        yield
 
 
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("patched_config")
+@patch("app.routes.check.fetch_risk_details", new_callable=AsyncMock)
+@patch("app.routes.check.get_current_token", new_callable=AsyncMock)
+async def test_check_ethereum_address_success(
+    mock_get_current_token: AsyncMock,
+    mock_fetch_risk_details: AsyncMock,
+    client: TestClient,
+) -> None:
+    """Test the successful check of an Ethereum address."""
+    token = generate_token(datetime.utcnow() + timedelta(hours=1))
+    test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67"
+
+    mock_get_current_token.return_value = token
+    mock_fetch_risk_details.return_value = RiskDetailsResponse(
+        case_id="1",
+        request_datetime="time1",
+        response_datetime="time2",
+        chain="eth",
+        address="addr1",
+        name="Binance 6",
+        category_name="Exchange",
+        risk=5,
+        details=Details(
+            own_categories=[
+                OwnCategory(
+                    address="addr1", name="Binance 6", category_name="Exchange", risk=5
+                )
+            ],
+            source_of_funds_categories=[],
+        ),
+    )
+
+    response = client.get(f"/check?address={test_address}")
+
+    assert response.status_code == 200
+    assert (
+        response.json()
+        == CheckEndpointResponse(category_names=["Exchange"]).model_dump()
+    )
+    mock_fetch_risk_details.assert_called_once_with(test_address, token)
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("patched_config")
+@patch("app.routes.check.fetch_risk_details", new_callable=AsyncMock)
+@patch("app.routes.check.get_current_token", new_callable=AsyncMock)
+async def test_check_ethereum_address_cached(
+    mock_get_current_token: AsyncMock,
+    mock_fetch_risk_details: AsyncMock,
+    client: TestClient,
+) -> None:
+    """Test the successful check of an Ethereum address from cache."""
+    token = generate_token(datetime.utcnow() + timedelta(hours=1))
+    test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67"
+
+    mock_get_current_token.return_value = token
+
+    response = client.get(f"/check?address={test_address}")
+
+    assert response.status_code == 200
+    assert (
+        response.json()
+        == CheckEndpointResponse(category_names=["Exchange"]).model_dump()
+    )
+
+    mock_fetch_risk_details.assert_not_called()
+
+
+@pytest.mark.usefixtures("patched_config")
 def test_check_ethereum_address_failed(client) -> None:
     """Test the failed check of an Ethereum address."""
-    with patch("app.routes.check.cfg.rate_limit", 100), patch(
-        "app.routes.check.cfg.rate_limit_time_window", 60
-    ):
-        response = client.get("/check")
-        assert response.status_code == 422
+    response = client.get("/check")
+    assert response.status_code == 422
 
-        data = response.json()
-        assert "detail" in data
-        assert data["detail"][0]["type"] == "missing"
-        assert data["detail"][0]["loc"] == ["query", "address"]
-        assert data["detail"][0]["msg"] == "Field required"
+    data = response.json()
+    assert "detail" in data
+    assert data["detail"][0]["type"] == "missing"
+    assert data["detail"][0]["loc"] == ["query", "address"]
+    assert data["detail"][0]["msg"] == "Field required"
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("patched_config")
+@patch("app.routes.check.fetch_risk_details", new_callable=AsyncMock)
+@patch("app.routes.check.get_current_token", new_callable=AsyncMock)
+async def test_check_ethereum_address_http_exception(
+    mock_get_current_token: AsyncMock,
+    mock_fetch_risk_details: AsyncMock,
+    client: TestClient,
+) -> None:
+    """Test the HTTPException raised by fetch_risk_details."""
+    token = generate_token(datetime.utcnow() + timedelta(hours=1))
+    test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A65"
+
+    mock_get_current_token.return_value = token
+    mock_fetch_risk_details.side_effect = HTTPException(
+        status_code=500, detail="Server Error"
+    )
+
+    response = client.get(f"/check?address={test_address}")
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Server Error"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("patched_config")
+@patch("app.routes.check.get_current_token", new_callable=AsyncMock)
+async def test_check_ethereum_address_token_exception(
+    mock_get_current_token: AsyncMock, client: TestClient
+) -> None:
+    """Test the HTTPException raised by get_current_token."""
+    test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A65"
+
+    mock_get_current_token.side_effect = HTTPException(
+        status_code=500, detail="Invalid token format"
+    )
+
+    response = client.get(f"/check?address={test_address}")
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Invalid token format"}

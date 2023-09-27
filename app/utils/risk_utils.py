@@ -6,6 +6,7 @@ import httpx
 from fastapi import HTTPException
 
 from app.config.config import cfg
+from app.models.risk_model import RiskDetailsResponse
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +50,7 @@ async def fetch_risk_details(address: str, jwt_token: str) -> str:
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=headers)
             if response.status_code == 200:
-                json_data = response.json()
-                return json_data
+                return RiskDetailsResponse.model_validate_json(response.text)
 
             logger.error("Unable to fetch risk details: %s", response.json())
             raise HTTPException(
@@ -63,3 +63,24 @@ async def fetch_risk_details(address: str, jwt_token: str) -> str:
             status_code=500,
             detail="Unable to fetch risk details: Internal server error",
         ) from exc
+
+
+def deduplicate_categories(risk_details: RiskDetailsResponse) -> list[str]:
+    """
+    Deduplicate categories.
+
+    :param risk_details: Risk details response from Blockmate API.
+
+    :return: List of categories.
+    """
+    categories: set[str] = set()
+
+    categories.add(risk_details.category_name)
+
+    for own_category in risk_details.details.own_categories:
+        categories.add(own_category.category_name)
+
+    for source_category in risk_details.details.source_of_funds_categories:
+        categories.add(source_category.category_name)
+
+    return list(categories)

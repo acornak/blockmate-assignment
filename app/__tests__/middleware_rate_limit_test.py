@@ -10,7 +10,7 @@ from app.middleware.rate_limiter import RateLimiter
 
 
 @pytest.fixture(scope="function")
-def app_setup() -> tuple:
+def app_setup() -> tuple[FastAPI, TestClient]:
     """
     Get the app and test client.
 

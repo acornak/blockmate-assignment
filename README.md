@@ -27,7 +27,7 @@ FastAPI provides a Swagger UI for API documentation. It can be accessed at ```ht
 
 ## Run coverage
 
-- First run tests: ```poetry run coverage run -m unittest discover -s app/__tests__ -p "*_test.py" -v```
+- First run tests: ```poetry run coverage run -m pytest app/__tests__ -v```
 - Then generate coverage report in terminal ```poetry run coverage report```
 - Or generate coverage report in html ```poetry run coverage html``` and open ```htmlcov/index.html``` in browser
 
