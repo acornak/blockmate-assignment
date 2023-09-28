@@ -1,4 +1,30 @@
-"""Test the cache module."""
+"""
+Test Cache Module.
+
+This module contains tests that validate the behavior of the LRU (Least Recently Used) cache
+implemented in the application. These tests include scenarios like cache miss, cache hit,
+setting cache entries, cache overflow, and cache purging.
+
+Components:
+- test_get_miss: Validates that a cache miss returns None.
+- test_get_hit: Validates that a cache hit returns the expected value.
+- test_set: Validates that a new cache entry can be set.
+- test_cache_overflow: Validates that the oldest cache entry is removed
+  when the cache exceeds its capacity.
+- test_clear_cache: Validates that the cache can be manually cleared.
+- test_periodic_purge: Validates that the cache is periodically purged after a given interval.
+
+Key Dependencies:
+- pytest for test functionality.
+- asyncio for asynchronous test execution.
+- LRUCache from app.cache.cache for cache checks.
+- CheckEndpointResponse from app.models.check_model for response model.
+
+Usage:
+Run these tests to ensure that the LRU cache is functioning as expected.
+Each test aims to validate a specific feature or behavior of the cache.
+
+"""
 import asyncio
 
 import pytest

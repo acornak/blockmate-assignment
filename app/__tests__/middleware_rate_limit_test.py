@@ -1,4 +1,32 @@
-"""Test the rate-limiting middleware."""
+"""
+Test Rate-Limiting Middleware.
+
+This module contains tests for the rate-limiting middleware in the application.
+These tests focus on scenarios such as basic rate-limiting, rate-limiting resets,
+and rate-limiting per IP.
+
+Components:
+- app_setup: Fixture to get the FastAPI app and test client.
+- rate_limiter: Fixture to get a RateLimiter object for each test.
+- patched_config: Fixture to patch the configuration values.
+- test_rate_limit: Test if basic rate-limiting works as expected.
+- test_rate_limit_reset: Test if the rate limit resets after the time window.
+- test_advanced_rate_limit: Test if rate-limiting works as expected per IP.
+- test_advanced_rate_limit_reset: Test if rate-limiting per IP resets after the time window.
+
+Key Dependencies:
+- pytest for test functionality.
+- unittest.mock for mocking.
+- datetime for date and time manipulations.
+- FastAPI for the web application.
+- TestClient from fastapi.testclient for API testing.
+- RateLimiter from app.middleware.rate_limiter for rate-limiting operations.
+
+Usage:
+Run these tests to ensure that rate-limiting logic in the application is correct.
+Each test aims to validate a specific behavior of the rate-limiting operations.
+
+"""
 from datetime import datetime, timedelta
 from unittest.mock import patch
 

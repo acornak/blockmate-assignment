@@ -1,4 +1,21 @@
-"""Base test class for all tests."""
+"""
+Utils for tests.
+
+This module provides utilities for generating JWT tokens required
+for testing various components of the application.
+
+Components:
+- generate_token: Function to generate a dummy JWT token with a given expiry time.
+
+Key Dependencies:
+- datetime for datetime operations
+- jwt for generating JSON Web Tokens (JWT)
+- ed25519 from cryptography.hazmat.primitives.asymmetric for generating Ed25519 private keys
+- serialization from cryptography.hazmat.primitives for PEM encoding
+
+Usage:
+This function is meant to be used in the test suites to simulate authentic JWT tokens.
+"""
 from datetime import datetime
 
 import jwt

@@ -1,4 +1,31 @@
-"""Test the risk details utility functions."""
+"""
+Test Risk Details Utility Functions.
+
+This module contains tests for the risk details utility functions in the application.
+The tests cover various scenarios such as successful and unsuccessful fetch
+of risk details and deduplication of risk categories.
+
+Components:
+- test_fetch_risk_details_success: Tests the successful fetch of the risk details.
+- test_fetch_risk_details_fail: Tests the failure to fetch the risk details due to authentication.
+- test_fetch_risk_details_httpx_exception: Tests the failure to fetch
+  the risk details due to an HTTPX Exception.
+- test_deduplicate_categories: Tests the deduplication of risk categories.
+
+Key Dependencies:
+- pytest for test functionality.
+- unittest.mock for mocking.
+- fastapi for HTTP exceptions.
+- httpx for making HTTP requests.
+- RiskDetailsResponse, Details, OwnCategory from app.models.risk_model.
+- deduplicate_categories, fetch_risk_details from app.utils.risk_utils.
+
+Usage:
+Run these tests to ensure that the risk details utility functions
+work as expected under various conditions.
+Each test validates a specific aspect of the function's behavior.
+
+"""
 from unittest.mock import AsyncMock, patch
 
 import pytest

@@ -1,4 +1,23 @@
-"""JWT Token handlers."""
+"""
+JWT Token Handlers Module.
+
+This module contains the JWTHandler class that provides functionalities
+for fetching and refreshing JWT tokens.
+
+Components:
+- JWTHandler: Class responsible for handling JWT tokens.
+
+Key Considerations:
+- Uses FastAPI for HTTP exceptions.
+- Utilizes asynchronous programming for non-blocking operations.
+
+Dependencies:
+- fetch_new_jwt_token from app.utils.jwt_utils for fetching new tokens.
+- FastAPI's HTTPException for error handling.
+- Python's standard logging for logging information.
+- asyncio.Lock for lock mechanism to handle concurrent requests.
+
+"""
 import base64
 import json
 import logging
@@ -13,7 +32,15 @@ logger = logging.getLogger(__name__)
 
 
 class JWTHandler:
-    """JWT Token handler."""
+    """
+    Class responsible for fetching and refreshing JWT tokens.
+
+    Provides:
+    - Method to fetch new JWT token with `get_token`
+    - Method to fetch the expiration time of a JWT token with `_get_expire_time`
+
+    Utilizes FastAPI for error handling and logging for information tracking.
+    """
 
     def __init__(self) -> None:
         """JWT Token handler constructor."""

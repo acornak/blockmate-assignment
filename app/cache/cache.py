@@ -1,4 +1,36 @@
-"""Least recently used cache."""
+"""
+Least Recently Used (LRU) Cache Module.
+
+This module provides an asynchronous LRU cache implementation using an OrderedDict.
+It follows the Singleton design pattern,
+ensuring that only one cache instance exists across the application.
+
+Components:
+- LRUCache: Class implementing the LRU cache.
+
+Key Attributes:
+- _instance: Singleton instance of the LRU cache
+- _lock: Class-level lock for singleton instance access
+- cache: The actual cache implemented as an OrderedDict
+- capacity: Maximum number of elements in the cache
+- purge_interval: Time interval for automatic cache purging in seconds
+- _instance_lock: Instance-level lock for thread safety
+
+Methods:
+- get_instance: Creates or retrieves the singleton instance of the cache.
+- delete_instance: Deletes the singleton instance.
+- get: Retrieves an item from the cache.
+- set: Inserts or updates an item in the cache.
+- clear_cache: Manually clears the cache.
+- periodic_purge: Periodically purges the cache based on the set interval.
+- stop_purge: Stops the purge process.
+
+Dependencies:
+- logging for logging actions and errors
+- asyncio for asynchronous programming
+- OrderedDict from collections for cache implementation
+- CheckEndpointResponse from app.models.check_model for type hinting
+"""
 import logging
 from asyncio import Lock, create_task, sleep
 from collections import OrderedDict
@@ -10,7 +42,18 @@ logger = logging.getLogger(__name__)
 
 
 class LRUCache:
-    """LRU Cache implementation using OrderedDict."""
+    """LRU Cache Implementation.
+
+    This class manages an LRU cache with a specified maximum capacity and optional purge interval.
+    It is designed as a Singleton to ensure only one cache instance across the application.
+
+    Attributes:
+    - cache: Actual cache implemented as an OrderedDict
+    - capacity: Maximum number of elements that can be stored in the cache
+    - purge_interval: Time interval for automatic cache purging, in seconds
+    - _instance_lock: Lock for ensuring thread-safe access to instance attributes
+    - _stop_purge: Flag to stop the periodic purge process
+    """
 
     _instance: Optional["LRUCache"] = None
     _lock: Lock = Lock()

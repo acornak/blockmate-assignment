@@ -1,4 +1,25 @@
-"""Main module for the FastAPI application."""
+"""
+Main module for the FastAPI application.
+
+This module initializes and configures the FastAPI application.
+
+1. Logging: Configured at the module level to ensure all logging is consistent.
+2. AppState: Holds the state of the application, including caching.
+   This provides a single source of truth.
+3. Rate Limiting: Middleware is added to impose rate limiting on all endpoints.
+   Implemented in-memory for simplicity and quick iteration.
+4. Event Hooks: Using FastAPI's event hooks to handle startup and shutdown events.
+   Useful for initializing and cleaning up resources.
+5. Router: Separate routing logic is included to keep the main module clean and maintainable.
+
+Dependencies:
+- FastAPI for the API framework.
+- Logging for application-level logging.
+
+Environment Variables:
+- LOG_LEVEL: The logging level. Default is "INFO".
+
+"""
 import logging
 import os
 

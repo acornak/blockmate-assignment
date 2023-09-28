@@ -1,4 +1,26 @@
-"""Centralized configuration for the application."""
+"""
+Centralized configuration for the application.
+
+This module holds the AppConfig class responsible for centralizing
+the application's configuration settings. It utilizes pydantic for validation
+and type checking, and python-dotenv for environment variable management.
+
+Components:
+- AppConfig: Pydantic class for app-wide configuration settings.
+
+Key Variables:
+- blockmate_api_url: URL for BlockMate API
+- project_token: Project token for the BlockMate API
+- jwt_url: URL for JWT service
+- rate_limit_time_window: Time window for rate limiting, in seconds
+- rate_limit: Number of requests allowed per time window
+
+Dependencies:
+- os for environment variables
+- dotenv for .env file parsing
+- pydantic for type checking and validation
+
+"""
 import os
 
 from dotenv import load_dotenv
@@ -9,13 +31,19 @@ load_dotenv(f".env.{environment}")
 
 
 class AppConfig(BaseSettings):
-    """Application configuration.
+    """
+    Centralized configuration for the application using Pydantic.
 
-    blockmate_api_url: URL for the BlockMate API.
-    project_token: Token for the BlockMate API.
-    jwt_url: URL for the JWT service.
-    rate_limit_time_window: Time window for the rate limiter in seconds.
-    rate_limit: Number of requests allowed per time window for the rate limiter.
+    This class holds variables that are critical for the application setup
+    and are loaded from .env files.
+    It uses pydantic for type checking and validation.
+
+    Variables:
+    - blockmate_api_url: URL for the BlockMate API
+    - project_token: API token for BlockMate
+    - jwt_url: URL for the JWT service
+    - rate_limit_time_window: Time window for rate limiting in seconds
+    - rate_limit: Number of allowed requests within the rate limit time window
     """
 
     blockmate_api_url: str

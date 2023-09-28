@@ -1,4 +1,34 @@
-"""Test the check route."""
+"""
+Test Check Route.
+
+This module contains tests for the `/check` route in the application.
+The tests cover various scenarios, such as a successful check of an Ethereum address, cache hit,
+missing address, and different types of exceptions.
+
+Components:
+- client: Fixture to get the FastAPI test client.
+- patched_config: Fixture to patch the configuration values.
+- test_check_ethereum_address_success: Tests a successful check of an Ethereum address.
+- test_check_ethereum_address_cached: Tests the behavior when the
+  Ethereum address data is already cached.
+- test_check_ethereum_address_failed: Tests the behavior when required address field is missing.
+- test_check_ethereum_address_http_exception: Tests the HTTPException
+  scenario for fetch_risk_details.
+- test_check_ethereum_address_token_exception: Tests the HTTPException
+  scenario for get_current_token.
+
+Key Dependencies:
+- pytest for test functionality.
+- unittest.mock for mocking.
+- datetime for date and time manipulations.
+- FastAPI for the web application.
+- TestClient from fastapi.testclient for API testing.
+
+Usage:
+Run these tests to ensure that the `/check` route works as expected under various conditions.
+Each test validates a specific aspect of the route's behavior.
+
+"""
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, patch
 

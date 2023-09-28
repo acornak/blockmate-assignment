@@ -1,4 +1,30 @@
-"""Test the JWT class."""
+"""
+Test JWT Class.
+
+This module contains tests for the JWT (JSON Web Token) handler in the application.
+These tests focus on scenarios such as token retrieval, token caching, and error conditions.
+
+Components:
+- handler: Fixture to get a JWTHandler object for each test.
+- token: Fixture to get a mock JWT token for each test.
+- test_get_current_token: Test if a new token can be retrieved.
+- test_get_token_uses_existing: Test if existing tokens are reused.
+- test_get_token_refreshes_expired: Test if expired tokens are refreshed.
+- test_get_expire_time_invalid_token_format: Test invalid token format.
+- test_get_expire_time_invalid_token_payload_json_decode_error: Test invalid token payload.
+
+Key Dependencies:
+- pytest for test functionality.
+- unittest.mock for mocking.
+- datetime for date and time manipulations.
+- JWTHandler from app.jwt.jwt for JWT operations.
+- get_current_token from app.jwt.jwt for getting the current token.
+
+Usage:
+Run these tests to ensure that JWT handling logic in the application is correct.
+Each test aims to validate a specific behavior of the JWT operations.
+
+"""
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, patch
 

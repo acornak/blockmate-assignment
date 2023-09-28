@@ -1,9 +1,6 @@
 build:
 	docker build -t blockmate-app .
 
-unit-test:
-	python -m unittest discover -s app/__tests__ -p "*_test.py" -v
-
 run:
 	docker run -p 8000:8000 blockmate-app
 
@@ -13,7 +10,15 @@ stop:
         docker stop $${container_id}; \
     done
 
-dockerize: build run
+dockerize:
+	build run
+
+api-test:
+	@sh api_test.sh
+
+load-test:
+	@sh load_test.sh
+
 
 help:
 	@echo "Usage: make [COMMAND]"
@@ -22,5 +27,7 @@ help:
 	@echo "  run          Run the Docker container"
 	@echo "  stop         Stop the Docker container"
 	@echo "  dockerize    Build and run the Docker container"
+	@echo "  api-test     Perform api test using shell script"
+	@echo "  load-test    Perform load test using shell script"
 
 .PHONY: build run stop remove dockerize help

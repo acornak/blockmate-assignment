@@ -1,4 +1,20 @@
-"""Utility functions for JWT."""
+"""
+Utility functions for JWT.
+
+This module contains utility functions for managing JSON Web Tokens (JWT) in the application.
+The following features are covered:
+
+1. Token Retrieval: Fetches a new JWT token from the Blockmate authentication service.
+
+Key Considerations:
+- The Blockmate API key is fetched from the application's environment configuration.
+- httpx.AsyncClient is used for making asynchronous HTTP requests.
+
+Dependencies:
+- httpx for making the HTTP calls.
+- app.config for application configuration parameters.
+
+"""
 import httpx
 
 from app.config.config import cfg

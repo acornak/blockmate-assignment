@@ -1,4 +1,21 @@
-"""Rate limiter middleware to limit incoming requests."""
+"""
+Rate Limiter Middleware Module.
+
+This module contains the RateLimiter class that provides middleware
+to limit the rate of incoming requests.
+
+Components:
+- RateLimiter: Class responsible for rate-limiting incoming API requests.
+
+Key Considerations:
+- Uses FastAPI for handling requests and responses.
+- Provides both global and per-IP rate limiting.
+
+Dependencies:
+- fastapi.Request and fastapi.Response for handling HTTP objects.
+- asyncio.Lock for lock mechanism to handle concurrent requests.
+
+"""
 from asyncio import Lock
 from datetime import datetime, timedelta
 from typing import Callable, Coroutine
@@ -10,7 +27,15 @@ from app.config.config import cfg
 
 
 class RateLimiter:
-    """Rate limiter class to limit incoming requests."""
+    """
+    Middleware class for rate-limiting incoming API requests.
+
+    Provides:
+    - Global rate limiting with `rate_limit_middleware`
+    - Per-IP rate limiting with `rate_limit_middleware_per_ip`
+
+    Utilizes FastAPI middleware functionality.
+    """
 
     def __init__(self) -> None:
         """Rate limiter constructor."""
@@ -27,12 +52,12 @@ class RateLimiter:
         call_next: Callable[[Request], Coroutine[None, None, Response]],
     ) -> Response:
         """
-        Rate limit middleware to limit incoming requests.
+        Middleware for global rate limiting.
 
-        :param request: Incoming request.
-        :param call_next: Next call in the middleware chain.
+        :param request: Incoming API request.
+        :param call_next: Next middleware in FastAPI's middleware chain.
 
-        :return: Response from the next call in the middleware chain.
+        :return: API response or rate limit exceeded message.
         """
         now: datetime = datetime.now()
 
@@ -65,10 +90,10 @@ class RateLimiter:
         the requests per IP. IP can be replaced with any other identifier, such as
         user ID, API key, etc. Useful for rate limiting per user.
 
-        :param request: Incoming request.
-        :param call_next: Next call in the middleware chain.
+        :param request: Incoming API request.
+        :param call_next: Next middleware in FastAPI's middleware chain.
 
-        :return: Response from the next call in the middleware chain.
+        :return: API response or rate limit exceeded message.
         """
         now = datetime.now()
 

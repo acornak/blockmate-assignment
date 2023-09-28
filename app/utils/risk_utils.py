@@ -1,4 +1,26 @@
-"""Utility functions for handling risk details requests."""
+"""
+Utility functions for handling risk details requests.
+
+This module contains utility functions focused on dealing with risk details.
+
+1. Risk Details Fetching: Retrieves the risk details of
+   a specific Ethereum address from the Blockmate API.
+2. Category Deduplication: Deduplicates categories received from
+   Blockmate API to present a simplified list.
+
+Key Considerations:
+- Uses httpx for asynchronous HTTP requests.
+- Exceptions are logged and propagated as HTTPException,
+  indicating the HTTP status and detail for debugging.
+
+Dependencies:
+- httpx for the HTTP client.
+- fastapi.HTTPException for exception handling.
+- app.config for application configuration parameters.
+- app.models for request and response models.
+- logging for logging purposes.
+
+"""
 import logging
 import urllib.parse
 
@@ -23,29 +45,6 @@ async def fetch_risk_details(address: str, jwt_token: str) -> str:
     headers = {"accept": "application/json", "authorization": f"Bearer {jwt_token}"}
     url = f"{cfg.blockmate_api_url}?address={urllib.parse.quote(address)}&chain=eth"
 
-    """
-    Response from Blockmate API: {
-        'case_id': '703c0074-698a-4f2a-88a3-5a48a08047b2',
-        'request_datetime': '2023-09-24T15:47:02Z',
-        'response_datetime': '2023-09-24T15:47:02Z',
-        'chain': 'eth',
-        'address': '0x4e9ce36e442e55ecd9025b9a6e0d88485d628a67',
-        'name': 'Binance 6',
-        'category_name':'Exchange',
-        'risk': 5,
-        'details': {
-            'own_categories': [
-                {
-                    'address': '0x4e9ce36e442e55ecd9025b9a6e0d88485d628a67',
-                    'name': 'Binance 6',
-                    'category_name': 'Exchange',
-                    'risk': 5
-                }
-            ],
-            'source_of_funds_categories': []
-        }
-    }
-    """
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=headers)
