@@ -70,7 +70,13 @@ async def test_check_ethereum_address_success(
     mock_fetch_risk_details: AsyncMock,
     client: TestClient,
 ) -> None:
-    """Test the successful check of an Ethereum address."""
+    """
+    Test the successful check of an Ethereum address.
+
+    :param mock_get_current_token: Mocked get_current_token function.
+    :param mock_fetch_risk_details: Mocked fetch_risk_details function.
+    :param client: Test client for the FastAPI application.
+    """
     token = generate_token(datetime.utcnow() + timedelta(hours=1))
     test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67"
 
@@ -113,7 +119,13 @@ async def test_check_ethereum_address_cached(
     mock_fetch_risk_details: AsyncMock,
     client: TestClient,
 ) -> None:
-    """Test the successful check of an Ethereum address from cache."""
+    """
+    Test the successful check of an Ethereum address from cache.
+
+    :param mock_get_current_token: Mocked get_current_token function.
+    :param mock_fetch_risk_details: Mocked fetch_risk_details function.
+    :param client: Test client for the FastAPI application.
+    """
     token = generate_token(datetime.utcnow() + timedelta(hours=1))
     test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67"
 
@@ -132,7 +144,11 @@ async def test_check_ethereum_address_cached(
 
 @pytest.mark.usefixtures("patched_config")
 def test_check_ethereum_address_failed(client) -> None:
-    """Test the failed check of an Ethereum address."""
+    """
+    Test the failed check of an Ethereum address.
+
+    :param client: Test client for the FastAPI application.
+    """
     response = client.get("/check")
     assert response.status_code == 422
 
@@ -152,7 +168,13 @@ async def test_check_ethereum_address_http_exception(
     mock_fetch_risk_details: AsyncMock,
     client: TestClient,
 ) -> None:
-    """Test the HTTPException raised by fetch_risk_details."""
+    """
+    Test the HTTPException raised by fetch_risk_details.
+
+    :param mock_get_current_token: Mocked get_current_token function.
+    :param mock_fetch_risk_details: Mocked fetch_risk_details function.
+    :param client: Test client for the FastAPI application.
+    """
     token = generate_token(datetime.utcnow() + timedelta(hours=1))
     test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A65"
 
@@ -173,7 +195,12 @@ async def test_check_ethereum_address_http_exception(
 async def test_check_ethereum_address_token_exception(
     mock_get_current_token: AsyncMock, client: TestClient
 ) -> None:
-    """Test the HTTPException raised by get_current_token."""
+    """
+    Test the HTTPException raised by get_current_token.
+
+    :param mock_get_current_token: Mocked get_current_token function.
+    :param client: Test client for the FastAPI application.
+    """
     test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A65"
 
     mock_get_current_token.side_effect = HTTPException(

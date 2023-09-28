@@ -22,6 +22,9 @@ class CheckEndpointResponse(BaseModel):
     """
     Data model for the /check endpoint API response.
 
+    Potential TODO: add request ID for logging purposes.
+
+
     :param category_names: List of deduplicated category names.
     """
 

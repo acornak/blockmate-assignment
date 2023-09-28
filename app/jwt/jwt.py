@@ -2,7 +2,8 @@
 JWT Token Handlers Module.
 
 This module contains the JWTHandler class that provides functionalities
-for fetching and refreshing JWT tokens.
+for fetching and refreshing JWT tokens. Using Singleton pattern, the class
+ensures that only one JWT handler instance exists across the application.
 
 Components:
 - JWTHandler: Class responsible for handling JWT tokens.

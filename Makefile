@@ -10,8 +10,7 @@ stop:
         docker stop $${container_id}; \
     done
 
-dockerize:
-	build run
+dockerize: build run
 
 api-test:
 	@sh api_test.sh

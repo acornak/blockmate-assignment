@@ -93,7 +93,12 @@ def test_rate_limit(app_setup, rate_limiter) -> None:
 
 @pytest.mark.usefixtures("patched_config")
 def test_rate_limit_reset(app_setup, rate_limiter) -> None:
-    """Test that rate-limiting resets after time_window."""
+    """
+    Test that rate-limiting resets after time_window.
+
+    :param app_setup: Fixture to get the FastAPI app and test client.
+    :param rate_limiter: Fixture to get a RateLimiter object for each test.
+    """
     app, client = app_setup
     app.middleware("http")(rate_limiter.rate_limit_middleware)
 
@@ -106,7 +111,12 @@ def test_rate_limit_reset(app_setup, rate_limiter) -> None:
 
 @pytest.mark.usefixtures("patched_config")
 def test_advanced_rate_limit(app_setup, rate_limiter) -> None:
-    """Test that rate-limiting works per IP."""
+    """
+    Test that rate-limiting works per IP.
+
+    :param app_setup: Fixture to get the FastAPI app and test client.
+    :param rate_limiter: Fixture to get a RateLimiter object for each test.
+    """
     app, client = app_setup
     app.middleware("http")(rate_limiter.rate_limit_middleware_per_ip)
 
@@ -120,7 +130,12 @@ def test_advanced_rate_limit(app_setup, rate_limiter) -> None:
 
 @pytest.mark.usefixtures("patched_config")
 def test_advanced_rate_limit_reset(app_setup, rate_limiter) -> None:
-    """Test that rate-limiting resets after time_window."""
+    """
+    Test that rate-limiting resets after time_window.
+
+    :param app_setup: Fixture to get the FastAPI app and test client.
+    :param rate_limiter: Fixture to get a RateLimiter object for each test.
+    """
     app, client = app_setup
     app.middleware("http")(rate_limiter.rate_limit_middleware_per_ip)
 

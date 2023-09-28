@@ -51,7 +51,11 @@ def patched_config() -> None:
 @pytest.mark.usefixtures("patched_config")
 @patch("httpx.AsyncClient.get", new_callable=AsyncMock)
 async def test_fetch_risk_details_success(mock_get: AsyncMock) -> None:
-    """Test the successful fetch of the risk details."""
+    """
+    Test the successful fetch of the risk details.
+
+    :param mock_get: Mocked HTTP GET request.
+    """
     fake_resp = {
         "case_id": "703c0074-698a-4f2a-88a3-5a48a08047b2",
         "request_datetime": "2023-09-24T15:47:02Z",
@@ -94,7 +98,11 @@ async def test_fetch_risk_details_success(mock_get: AsyncMock) -> None:
 @pytest.mark.usefixtures("patched_config")
 @patch("httpx.AsyncClient.get", new_callable=AsyncMock)
 async def test_fetch_risk_details_fail(mock_get: AsyncMock) -> None:
-    """Test the failure to fetch the risk details."""
+    """
+    Test the failure to fetch the risk details.
+
+    :param mock_get: Mocked HTTP GET request.
+    """
     fake_resp = {"error": "unable to authenticate"}
     test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67"
     jwt_token = "some_token"
@@ -116,7 +124,11 @@ async def test_fetch_risk_details_fail(mock_get: AsyncMock) -> None:
 @pytest.mark.asyncio
 @patch("httpx.AsyncClient.get", new_callable=AsyncMock)
 async def test_fetch_risk_details_httpx_exception(mock_get: AsyncMock) -> None:
-    """Test the failure to fetch the risk details due to the HTTPX Exception."""
+    """
+    Test the failure to fetch the risk details due to the HTTPX Exception.
+
+    :param mock_get: Mocked HTTP GET request.
+    """
     test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67"
     jwt_token = "some_token"
 

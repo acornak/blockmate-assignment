@@ -22,6 +22,7 @@ Each test validates a specific aspect of the function's behavior.
 from unittest.mock import AsyncMock, patch
 
 import pytest
+from fastapi import HTTPException
 from httpx import Response
 
 from app.utils.jwt_utils import fetch_new_jwt_token
@@ -30,7 +31,11 @@ from app.utils.jwt_utils import fetch_new_jwt_token
 @pytest.mark.asyncio
 @patch("httpx.AsyncClient.get", new_callable=AsyncMock)
 async def test_fetch_new_jwt_token_success(mock_get: AsyncMock) -> None:
-    """Test the successful fetch of a new JWT token."""
+    """
+    Test the successful fetch of a new JWT token.
+
+    :param mock_get: Mocked HTTP GET request.
+    """
     fake_token = "fake_token"
 
     mock_get.return_value = Response(200, json={"token": fake_token})
@@ -42,8 +47,16 @@ async def test_fetch_new_jwt_token_success(mock_get: AsyncMock) -> None:
 @pytest.mark.asyncio
 @patch("httpx.AsyncClient.get", new_callable=AsyncMock)
 async def test_fetch_new_jwt_token_failure(mock_get: AsyncMock) -> None:
-    """Test the failure to fetch a new JWT token."""
-    mock_get.return_value = Response(400, json={"error": "something went wrong"})
+    """
+    Test the failure to fetch a new JWT token.
 
-    result = await fetch_new_jwt_token()
-    assert result is None
+    :param mock_get: Mocked HTTP GET request.
+    """
+    fake_resp = {"error": "something went wrong"}
+    mock_get.return_value = Response(400, json=fake_resp)
+
+    with pytest.raises(HTTPException) as excinfo:
+        await fetch_new_jwt_token()
+
+    assert excinfo.value.status_code == 502
+    assert excinfo.value.detail == f"Unable to fetch JWT token: {fake_resp}"

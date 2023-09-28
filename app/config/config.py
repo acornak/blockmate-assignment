@@ -8,7 +8,7 @@ and type checking, and python-dotenv for environment variable management.
 Components:
 - AppConfig: Pydantic class for app-wide configuration settings.
 
-Key Variables:
+Key Attributes:
 - blockmate_api_url: URL for BlockMate API
 - project_token: Project token for the BlockMate API
 - jwt_url: URL for JWT service

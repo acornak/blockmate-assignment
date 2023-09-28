@@ -77,7 +77,11 @@ class LRUCache:
     async def get_instance(
         cls, capacity: int = 100, purge_interval: int = None
     ) -> "LRUCache":
-        """Get the singleton instance of the cache."""
+        """
+        Get the singleton instance of the cache.
+
+        More explicit than using the __new__ method.
+        """
         async with cls._lock:
             if cls._instance is None:
                 cls._instance = cls(capacity, purge_interval)
@@ -91,7 +95,13 @@ class LRUCache:
             cls._instance = None
 
     async def get(self, key: str) -> Optional[CheckEndpointResponse]:
-        """Get the value of a key in the cache."""
+        """
+        Get the value of a key in the cache.
+
+        :param key: The key to retrieve.
+
+        :return: The value of the key if it exists, else None.
+        """
         async with self._instance_lock:
             if key not in self.cache:
                 return None
@@ -100,7 +110,12 @@ class LRUCache:
             return self.cache[key]
 
     async def set(self, key: str, value: CheckEndpointResponse) -> None:
-        """Set the value of a key in the cache."""
+        """
+        Set the value of a key in the cache.
+
+        :param key: The key to set.
+        :param value: The value to set.
+        """
         async with self._instance_lock:
             self.cache[key] = value
             if len(self.cache) > self.capacity:

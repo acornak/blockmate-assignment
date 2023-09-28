@@ -46,12 +46,14 @@ def client() -> TestClient:
 
 
 def test_not_found(client) -> None:
-    """Test that the / route returns a 404."""
+    """
+    Test that the / route returns a 404.
+
+    :param client: Test client for the FastAPI application.
+    """
     response = client.get("/")
     assert response.status_code == 404
     assert response.json() == {"detail": "Not Found"}
-
-    print(app.state)
 
 
 def test_check_route_exists() -> None:

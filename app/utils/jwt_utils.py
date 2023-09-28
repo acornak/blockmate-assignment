@@ -16,6 +16,7 @@ Dependencies:
 
 """
 import httpx
+from fastapi import HTTPException
 
 from app.config.config import cfg
 
@@ -29,3 +30,7 @@ async def fetch_new_jwt_token() -> str:
         if response.status_code == 200:
             json_data = response.json()
             return json_data.get("token")
+        raise HTTPException(
+            status_code=502,
+            detail=f"Unable to fetch JWT token: {response.json()}",
+        )

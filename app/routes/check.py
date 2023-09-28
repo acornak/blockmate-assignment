@@ -21,8 +21,7 @@ Dependencies:
 import logging
 from time import time
 
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter
 
 from app.cache.cache import LRUCache
 from app.jwt.jwt import get_current_token
@@ -48,10 +47,7 @@ async def check_ethereum_address(
     # some metrics
     start_time = time()
 
-    try:
-        jwt_token = await get_current_token()
-    except HTTPException as exc:
-        return JSONResponse(content={"detail": exc.detail}, status_code=exc.status_code)
+    jwt_token = await get_current_token()
 
     cache = await LRUCache.get_instance()
     cached_result = await cache.get(address)
@@ -64,11 +60,7 @@ async def check_ethereum_address(
         )
         return cached_result
 
-    try:
-        response = await fetch_risk_details(address, jwt_token)
-        logger.info("Risk details response: %s", response)
-    except HTTPException as exc:
-        return JSONResponse(content={"detail": exc.detail}, status_code=exc.status_code)
+    response = await fetch_risk_details(address, jwt_token)
 
     categories = deduplicate_categories(response)
 
