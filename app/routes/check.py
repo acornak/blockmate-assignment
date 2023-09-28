@@ -21,7 +21,8 @@ Dependencies:
 import logging
 from time import time
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from web3 import Web3
 
 from app.cache.cache import LRUCache
 from app.jwt.jwt import get_current_token
@@ -46,6 +47,13 @@ async def check_ethereum_address(
     """
     # some metrics
     start_time = time()
+
+    # implement early fail for invalid addresses to prevent unnecessary API calls
+    if not Web3.is_address(address):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid eth address.",
+        )
 
     jwt_token = await get_current_token()
 

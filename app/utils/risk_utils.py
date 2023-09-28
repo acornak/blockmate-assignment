@@ -60,7 +60,7 @@ async def fetch_risk_details(address: str, jwt_token: str) -> str:
         logger.error("Request error: %s", str(exc))
         raise HTTPException(
             status_code=500,
-            detail="Unable to fetch risk details: Internal server error",
+            detail="Unable to fetch risk details: Internal server error.",
         ) from exc
 
 

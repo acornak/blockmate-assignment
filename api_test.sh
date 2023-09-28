@@ -21,11 +21,11 @@ function start_docker_container {
 function make_requests {
     local count_200=0
     local count_429=0
-    local count_5xx=0
+    local count_err=0
 
     local total_time_200=0.0
     local total_time_429=0.0
-    local total_time_5xx=0.0
+    local total_time_err=0.0
 
 
     for ((i=1; i<=$NUM_REQUESTS; i++)); do
@@ -45,8 +45,8 @@ function make_requests {
             total_time_429=$(echo "$total_time_429 + $elapsed_time" | bc -l)
             ((count_429++))
         else
-            total_time_5xx=$(echo "$total_time_5xx + $elapsed_time" | bc -l)
-            ((count_5xx++))
+            total_time_err=$(echo "$total_time_err + $elapsed_time" | bc -l)
+            ((count_err++))
         fi
     done
 
@@ -73,15 +73,15 @@ function make_requests {
         echo "No 429 response received."
     fi
 
-    if [ $count_5xx -gt 0 ]; then
-        local average_time_non_200=$(echo "scale=2; $total_time_5xx / $count_5xx" | bc -l)
+    if [ $count_err -gt 0 ]; then
+        local average_time_err=$(echo "scale=2; $total_time_err / $count_err" | bc -l)
         echo "=================================================="
-        echo "Number of 5xx responses: $count_5xx / $NUM_REQUESTS"
-        echo "Average time for 5xx responses: $average_time_non_200 ms"
+        echo "Number of error responses: $count_err / $NUM_REQUESTS"
+        echo "Average time for error responses: $average_time_err ms"
         echo "=================================================="
     else
         echo "=================================================="
-        echo "No 5xx response received."
+        echo "No error response received."
         echo "=================================================="
     fi
 }

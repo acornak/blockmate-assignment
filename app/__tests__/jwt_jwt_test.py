@@ -104,7 +104,7 @@ def test_get_expire_time_invalid_token_format(handler: JWTHandler) -> None:
     with pytest.raises(HTTPException) as excinfo:
         handler._get_expire_time("invalid.token")
     assert excinfo.value.status_code == 500
-    assert excinfo.value.detail == "Invalid token format"
+    assert excinfo.value.detail == "Invalid token format."
 
 
 def test_get_expire_time_invalid_token_payload_json_decode_error(

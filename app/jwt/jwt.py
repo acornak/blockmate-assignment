@@ -83,7 +83,7 @@ class JWTHandler:
         try:
             token_parts = token.split(".")
             if len(token_parts) != 3:
-                raise HTTPException(status_code=500, detail="Invalid token format")
+                raise HTTPException(status_code=500, detail="Invalid token format.")
 
             payload = json.loads(
                 base64.urlsafe_b64decode(

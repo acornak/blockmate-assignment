@@ -28,7 +28,7 @@ This API service is designed to fetch and analyze the risk data of Ethereum addr
 
 - **JWT Token Management**: Acquires and reuses JWT from Blockmate.io. Refreshes JWT upon expiration.
 - **Rate Limiting**: 100 requests per minute (potentially per IP), implemented in-memory.
-- **Dockerized**: Lightweight Docker image (~330 MB) for easy deployment.
+- **Dockerized**: Lightweight Docker image (~330 MB or ~430 MB when adding Web3 package to check ETH address validity) for easy deployment.
 
 ## Pre-requisites
 
@@ -61,6 +61,8 @@ FastAPI provides a Swagger UI for API documentation. It can be accessed at ```ht
 - **In-memory Rate Limiting** The current rate-limiting mechanism is in-memory, making it unsuitable for production-level, distributed systems.
 
 - **Single Worker** The current setup uses a single worker. This is not suitable for production-level, distributed systems.
+
+- **Checking ETH address validity** The current setup checks the validity of ETH address from request using Web3 package. However, this will increase the size of the Docker image by ~100 MB and increases the response time. On the other side, it will prevent unnecessary requests to Blockmate.io and reduce the response time for invalid ETH addresses.
 
 ## Future Improvements
 

@@ -138,7 +138,9 @@ async def test_fetch_risk_details_httpx_exception(mock_get: AsyncMock) -> None:
         await fetch_risk_details(test_address, jwt_token)
 
     assert excinfo.value.status_code == 500
-    assert excinfo.value.detail == "Unable to fetch risk details: Internal server error"
+    assert (
+        excinfo.value.detail == "Unable to fetch risk details: Internal server error."
+    )
 
 
 @pytest.mark.parametrize(

@@ -78,7 +78,7 @@ async def test_check_ethereum_address_success(
     :param client: Test client for the FastAPI application.
     """
     token = generate_token(datetime.utcnow() + timedelta(hours=1))
-    test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67"
+    test_address = "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
 
     mock_get_current_token.return_value = token
     mock_fetch_risk_details.return_value = RiskDetailsResponse(
@@ -127,7 +127,7 @@ async def test_check_ethereum_address_cached(
     :param client: Test client for the FastAPI application.
     """
     token = generate_token(datetime.utcnow() + timedelta(hours=1))
-    test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67"
+    test_address = "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
 
     mock_get_current_token.return_value = token
 
@@ -176,7 +176,7 @@ async def test_check_ethereum_address_http_exception(
     :param client: Test client for the FastAPI application.
     """
     token = generate_token(datetime.utcnow() + timedelta(hours=1))
-    test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A65"
+    test_address = "0x32Be343B94f860124dC4fEe278FDCBD38C102D88"
 
     mock_get_current_token.return_value = token
     mock_fetch_risk_details.side_effect = HTTPException(
@@ -201,13 +201,29 @@ async def test_check_ethereum_address_token_exception(
     :param mock_get_current_token: Mocked get_current_token function.
     :param client: Test client for the FastAPI application.
     """
-    test_address = "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A65"
+    test_address = "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"
 
     mock_get_current_token.side_effect = HTTPException(
-        status_code=500, detail="Invalid token format"
+        status_code=500, detail="Invalid token format."
     )
 
     response = client.get(f"/check?address={test_address}")
 
     assert response.status_code == 500
-    assert response.json() == {"detail": "Invalid token format"}
+    assert response.json() == {"detail": "Invalid token format."}
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("patched_config")
+async def test_check_ethereum_address_invalid_address(client: TestClient) -> None:
+    """
+    Test the HTTPException raised by get_current_token for invalid address.
+
+    :param client: Test client for the FastAPI application.
+    """
+    test_address = "zidansufurki"
+
+    response = client.get(f"/check?address={test_address}")
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Invalid eth address."}
